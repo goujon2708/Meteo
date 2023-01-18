@@ -1,9 +1,10 @@
-package univ.master.meteo
+package univ.master.meteo.ville
 
-import androidx.appcompat.app.AppCompatActivity
+import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import univ.master.meteo.R
 
-class MainActivity : AppCompatActivity() {
+class  VilleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

@@ -1,49 +1,47 @@
 package univ.master.meteo
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import univ.master.meteo.ville.Ville
 
-/**
- * Nom du fichier représentant la table
- */
 private const val NOM_DATABASE = "meteo.db"
-
-/**
- * Numéro de version de la base de données
- */
 private const val VERSION_DATABASE = 1
 
-/**
- * Nom de la table principale
- */
-private const val NOM_VILLE_TABLE = "ville"
+private const val NOM_TABLE_VILLE = "ville"
+private const val ID_CLE_VILLE = "id"
+private const val NOM_CLE_VILLE = "nom"
 
-/**
- * Identifiant de la ville
- */
-private const val ID_VILLE_CLE = "id"
-
-/**
- * Nom de la ville
- */
-private const val NOM_VILLE_CLE = "nom"
-
-// Requête de création de la table
-private const val TABLE_VILLE_CREER = """
-    CREATE TABLE $NOM_VILLE_TABLE(
-        $ID_VILLE_CLE INTEGER PRIMARY KEY,
-        $NOM_VILLE_CLE TEXT
+private const val VILLE_TABLE_CREER = """
+    CREATE TABLE $NOM_TABLE_VILLE (
+        $ID_CLE_VILLE INTEGER PRIMARY KEY,
+        $NOM_CLE_VILLE TEXT
     )
 """
 
-class Database(contexte: Context) : SQLiteOpenHelper(contexte, NOM_DATABASE, null, VERSION_DATABASE) {
+class Database(contexte: Context): SQLiteOpenHelper(contexte, NOM_DATABASE, null, VERSION_DATABASE) {
+
+    val TAG = Database::class.java.simpleName
+
     override fun onCreate(db: SQLiteDatabase?) {
-        /* Création de la table */
-        db?.execSQL(TABLE_VILLE_CREER)
+        db?.execSQL(VILLE_TABLE_CREER)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, ancienneVersion: Int, nouvelleVersion: Int) {
+        TODO("Not yet implemented")
     }
 
+    fun creerVille(ville: Ville): Boolean {
+        val valeurs = ContentValues()
+        valeurs.put(NOM_CLE_VILLE, ville.nom)
+
+        Log.d(TAG, "Ville créée : $valeurs")
+
+        val id = writableDatabase.insert(NOM_TABLE_VILLE, null, valeurs)
+        ville.id = id
+
+        return id > 0
+    }
 }

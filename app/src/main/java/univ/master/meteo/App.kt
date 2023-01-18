@@ -2,7 +2,6 @@ package univ.master.meteo
 
 import android.app.Application
 
-
 class App: Application() {
 
     companion object {
