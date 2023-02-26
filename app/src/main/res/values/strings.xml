@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">Meteo</string>
-    <string name="creerVille_titre">New York city name ?</string>
-    <string name="creerVille_positive">Creer ville</string>
-    <string name="creerVille_negative">Annuler</string>
-    <string name="creerVille_villeHint">New York, London...</string>
-</resources>
