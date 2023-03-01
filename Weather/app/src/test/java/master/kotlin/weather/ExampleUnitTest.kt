@@ -1,4 +1,4 @@
-package master.kotlin.weatherapp
+package master.kotlin.weather
 
 import org.junit.Test
 

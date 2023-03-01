@@ -1,4 +1,4 @@
-package master.kotlin.weatherapp
+package master.kotlin.weather
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("master.kotlin.weatherapp", appContext.packageName)
+        assertEquals("master.kotlin.weather", appContext.packageName)
     }
 }
