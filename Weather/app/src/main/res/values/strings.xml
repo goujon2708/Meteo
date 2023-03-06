@@ -8,8 +8,8 @@
     <string name="max_temp">Max Temp</string>
     <string name="humidity">Humidity</string>
     <string name="min_temp">Min Temp</string>
-    <string name="wind_speed">Wind Speed</string>
-    <string name="temperature_in_f">Temperature in F</string>
+    <string name="wind_speed">WS</string>
+    <string name="temperature_in_f">Temperature(F)</string>
     <string name="day">day 1</string>
     <string name="night">Night 2</string>
     <string name="main_temp">16*</string>
