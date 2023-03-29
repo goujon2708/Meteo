@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         val currentDate=sdf.format(Date())
         activityMainBinding.tvDateAndTime.text=currentDate
         activityMainBinding.tvDayMaxTemp.text="Day "+kelvinToCelsius(body!!.main.temp_max)+"°"
-        activityMainBinding.tvDayMaxTemp.text="Night"+kelvinToCelsius(body!!.main.temp_max)+"°"
+        activityMainBinding.tvDayMinTemp.text="Night"+kelvinToCelsius(body!!.main.temp_min)+"°"
         activityMainBinding.tvFeelsLke.text="Feel Alike "+kelvinToCelsius(body!!.main.feels_like)+"°"
         activityMainBinding.tvWeatherType.text=body.weather[0].main
         activityMainBinding.tvSunrise.text=timeStampToLocalDate(body.sys.sunrise.toLong())
@@ -163,6 +163,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.tvWindSpeed.text = body.wind.speed.toString()+" m/s"
         activityMainBinding.tvTempF.text=""+((kelvinToCelsius(body.main.temp)).times(1.8).plus(32).roundToInt())
         activityMainBinding.etGetCityName.setText(body.name)
+        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body!!.main.temp)+"°C"
 
         updateUI(body.weather[0].id)
 
