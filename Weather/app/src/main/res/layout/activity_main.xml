@@ -216,7 +216,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="0dp"
-                        android:background=""
+
                         android:orientation="horizontal">
 
                         <RelativeLayout
@@ -369,7 +369,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="0dp"
-                        android:background=""
+
                         android:orientation="horizontal">
 
                         <RelativeLayout

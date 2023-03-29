@@ -17,8 +17,9 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.databinding.DataBindingUtil
+
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import master.kotlin.weather.POJO.ModelClass
@@ -34,6 +35,8 @@ import java.time.ZoneId
 import java.util.*
 import kotlin.math.roundToInt
 
+
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -41,7 +44,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityMainBinding = DataBindingUtil.setContentView<ViewDataBinding>(this, R.layout.activity_main) as ActivityMainBinding
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(activityMainBinding.root)
         supportActionBar?.hide()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         activityMainBinding.rlMainLayout.visibility = View.GONE
