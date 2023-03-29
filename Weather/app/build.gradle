@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'master.kotlin.weather'
-    compileSdk 29
+    compileSdk 31
 
     defaultConfig {
         applicationId "master.kotlin.weather"
         minSdk 21
-        targetSdk 32
+        targetSdk 31
         versionCode 1
         versionName "1.0"
 
@@ -30,8 +30,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeature{
+    buildFeatures{
         dataBinding = true
+        viewBinding = true
     }
 }
 
