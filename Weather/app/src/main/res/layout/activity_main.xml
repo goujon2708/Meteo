@@ -54,6 +54,7 @@
                         android:paddingEnd="@dimen/padding_large"
                         android:drawableTint="@color/black"
                         android:background="@color/white"
+                        android:textColor="@color/black"
                         android:autofillHints="">
                     </EditText>
 
