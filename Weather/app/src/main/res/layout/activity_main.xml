@@ -78,7 +78,7 @@
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:id="@+id/iv_weather_bg"
-                    android:src="@drawable/snow_bg">
+                    android:src="@drawable/snow_bg_img">
 
                 </ImageView>
 
@@ -208,7 +208,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="202dp"
-                    android:background="@drawable/snow_bg"
+                    android:background="@drawable/snow_bg_img"
                     android:orientation="vertical">
 
                     <LinearLayout

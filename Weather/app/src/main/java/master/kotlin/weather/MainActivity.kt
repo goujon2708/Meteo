@@ -9,7 +9,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.renderscript.ScriptGroup.Input
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -19,13 +18,12 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.SettingsClient
 import master.kotlin.weather.POJO.ModelClass
 import master.kotlin.weather.Utilities.ApiUtilities
 import master.kotlin.weather.databinding.ActivityMainBinding
-import okhttp3.internal.cache.DiskLruCache.Editor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main) as ActivityMainBinding
+        activityMainBinding = DataBindingUtil.setContentView<ViewDataBinding>(this, R.layout.activity_main) as ActivityMainBinding
         supportActionBar?.hide()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         activityMainBinding.rlMainLayout.visibility = View.GONE
@@ -159,8 +157,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.tvPressure.text=body.main.pressure.toString()
         activityMainBinding.tvHumidity.text=body.main.humidity.toString()+"%"
         activityMainBinding.tvWindSpeed.text = body.wind.speed.toString()+" m/s"
-
-        activityMainBinding.tvTempFarenhite.text=""+((kelvinToCelsius(body.main.temp)).times(1.8).plus(32).roundToInt())
+        activityMainBinding.tvTempF.text=""+((kelvinToCelsius(body.main.temp)).times(1.8).plus(32).roundToInt())
         activityMainBinding.etGetCityName.setText(body.name)
 
         updateUI(body.weather[0].id)
@@ -177,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.thunderstorm))
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.thunderstrom_bg
+                R.drawable.thunderstorm_bg
             )
             activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -237,18 +234,18 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.snow))
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.snow_bg
+                R.drawable.snow_bg_img
             )
             activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.snow_bg
+                R.drawable.snow_bg_img
             )
             activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.snow_bg
+                R.drawable.snow_bg_img
             )
 
-            activityMainBinding.ivWeatherBg.setImageResource(R.drawable.snow_bg)
+            activityMainBinding.ivWeatherBg.setImageResource(R.drawable.snow_bg_img)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.snow)
         }else if(id in 701..781){
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -297,18 +294,18 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clouds))
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.clouds_bg
+                R.drawable.cloud_bg
             )
             activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.clouds_bg
+                R.drawable.cloud_bg
             )
             activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.clouds_bg
+                R.drawable.cloud_bg
             )
 
-            activityMainBinding.ivWeatherBg.setImageResource(R.drawable.clouds_bg)
+            activityMainBinding.ivWeatherBg.setImageResource(R.drawable.cloud_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.clouds)
         }
 
@@ -322,6 +319,8 @@ class MainActivity : AppCompatActivity() {
             Instant.ofEpochSecond(it).
                     atZone(ZoneId.systemDefault()).toLocalTime()
         }
+
+        return localTime.toString()
     }
     private fun isLocationEnabled() : Boolean{
         val locationManager: LocationManager =
