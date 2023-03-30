@@ -14,6 +14,9 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -21,7 +24,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
-
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import master.kotlin.weather.POJO.ModelClass
@@ -48,6 +50,8 @@ class MainActivity : AppCompatActivity() {
     private var modelClassData: ModelClass? = null // Déclaration de la variable de classe
     private lateinit var weatherFragmentAdapter: WeatherFragmentAdapter
 
+    val villesFavorites = arrayOf("Le Mans", "Paris", "Nice")
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +60,27 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         activityMainBinding.rlMainLayout.visibility = View.GONE
+
+        /* Gestion du menu déroulant des villes favorites */
+        val spinner = findViewById<Spinner>(R.id.sp_favoris)
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, villesFavorites)
+        spinner.adapter = arrayAdapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                Toast.makeText(applicationContext, "ville sélectionnée : " + villesFavorites[position], Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
+
 
         // Set up the ViewPager with a PagerAdapter
         viewPager = activityMainBinding.viewPager
@@ -217,10 +242,10 @@ class MainActivity : AppCompatActivity() {
         weatherFragmentAdapter.setFragmentData(1, pressureBundle)
 
         // common data to be displayed in all views/fragments
-        activityMainBinding.tvDayMaxTemp.text = "Day " + kelvinToCelsius(body!!.main.temp_max) + "°"
-        activityMainBinding.tvDayMinTemp.text = "Night" + kelvinToCelsius(body!!.main.temp_min) + "°"
-        activityMainBinding.tvFeelsLke.text = "Feel Alike " + kelvinToCelsius(body!!.main.feels_like) + "°"
-        activityMainBinding.tvWeatherType.text = body?.weather?.get(0)?.main
+        activityMainBinding.tvDayMaxTemp.text = "Jour " + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"
+        activityMainBinding.tvDayMinTemp.text = "Nuit " + kelvinToCelsius(body!!.main.temp_min).roundToInt() + "°C"
+        activityMainBinding.tvFeelsLke.text = "Ressenti " + kelvinToCelsius(body!!.main.feels_like).roundToInt() + "°C"
+        activityMainBinding.tvWeatherType.text = body.weather[0].main
         activityMainBinding.tvSunrise.text = timeStampToLocalDate(body.sys.sunrise.toLong())
         activityMainBinding.tvWindSpeed.text = body?.wind?.speed.toString() + " m/s"
         activityMainBinding.tvTempF.text = "" + ((kelvinToCelsius(body?.main?.temp ?: 0.0)).times(1.8).plus(32).roundToInt())
@@ -417,4 +442,6 @@ class MainActivity : AppCompatActivity() {
         intTemp = intTemp.minus(273)
         return intTemp.toBigDecimal().setScale(1, RoundingMode.UP).toDouble()
     }
+
+
 }

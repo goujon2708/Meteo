@@ -70,9 +70,9 @@
             android:id="@+id/rl_sub_layout"
             android:layout_below="@+id/cv_toolbar">
 
-            <FrameLayout
+            <!-- <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"> -->
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -83,10 +83,21 @@
 
                 </ImageView>
 
-                <LinearLayout
+            <Spinner
+                android:id="@+id/sp_favoris"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginRight="50dp"
+                android:layout_centerHorizontal="true">
+
+            </Spinner>
+
+            <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/padding_large"
+                    android:layout_marginTop="65dp"
                     android:layout_marginStart="@dimen/padding_x_large"
                     android:orientation="vertical">
 
@@ -207,7 +218,7 @@
 
                 </LinearLayout>
 
-            </FrameLayout>
+            <!--</FrameLayout> -->
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
