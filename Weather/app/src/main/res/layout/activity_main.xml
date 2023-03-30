@@ -99,11 +99,13 @@
 
                     </TextView>
 
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/padding_large"
                         android:orientation="horizontal" >
+
 
                         <TextView
                             android:layout_width="match_parent"
@@ -145,7 +147,7 @@
                             android:textSize="@dimen/text_super_large">
 
                         </TextView>
-                        
+
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="100dp"
@@ -155,38 +157,53 @@
                             android:src="@drawable/sun">
 
                         </ImageView>
-                        
+
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/padding_large"
-                        android:orientation="horizontal" >
+                        android:orientation="vertical">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/tv_feels_lke"
+                            android:layout_marginTop="@dimen/padding_large"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_feels_lke"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/feels_alike"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_large">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/tv_weather_type"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:text="@string/weather_type"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/text_large">
+
+                            </TextView>
+                        </LinearLayout>
+
+                        <androidx.viewpager2.widget.ViewPager2
+                            android:id="@+id/viewPager"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
                             android:layout_weight="1"
-                            android:textColor="@color/white"
-                            android:text="@string/feels_alike"
-                            android:textSize="@dimen/text_large">
-
-                        </TextView>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/tv_weather_type"
-                            android:layout_weight="3"
-                            android:textColor="@color/white"
-                            android:text="@string/weather_type"
-                            android:textSize="@dimen/text_large">
-
-                        </TextView>
-
+                             />
                     </LinearLayout>
+
+
+
 
                 </LinearLayout>
 

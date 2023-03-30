@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract.Data
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
@@ -19,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import androidx.databinding.DataBindingUtil
+import androidx.viewpager2.widget.ViewPager2
 
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -42,6 +44,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var viewPager: ViewPager2
+    private var modelClassData: ModelClass? = null // Déclaration de la variable de classe
+    private lateinit var weatherFragmentAdapter: WeatherFragmentAdapter
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +56,13 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         activityMainBinding.rlMainLayout.visibility = View.GONE
+
+        // Set up the ViewPager with a PagerAdapter
+        viewPager = activityMainBinding.viewPager
+        viewPager.visibility = View.VISIBLE // Set ViewPager2 visibility to VISIBLE
+
+        weatherFragmentAdapter = WeatherFragmentAdapter(this)
+        viewPager.adapter = weatherFragmentAdapter // Set the adapter after initializing ViewPager2
 
         // Vérifier si les permissions ont déjà été accordées
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -74,6 +86,8 @@ class MainActivity : AppCompatActivity() {
             } else false
         })
     }
+
+
 
     private fun initUI() {
         // Initialiser l'interface utilisateur ici
@@ -106,7 +120,7 @@ class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call:Call<ModelClass>, response: Response<ModelClass>){
 
-                setDataOnView(response.body())
+                setDataOnView(response.body(), viewPager.currentItem)
 
             }
 
@@ -167,7 +181,7 @@ class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call:Call<ModelClass>, response: Response<ModelClass>){
                 if(response.isSuccessful){
-                    setDataOnView(response.body())
+                    setDataOnView(response.body(),viewPager.currentItem)
                 }
             }
 
@@ -181,27 +195,45 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setDataOnView(body:ModelClass?){
-        val sdf=SimpleDateFormat("dd/MM/yyyy hh:mm")
-        val currentDate=sdf.format(Date())
-        activityMainBinding.tvDateAndTime.text=currentDate
-        activityMainBinding.tvDayMaxTemp.text="Day "+kelvinToCelsius(body!!.main.temp_max)+"°"
-        activityMainBinding.tvDayMinTemp.text="Night"+kelvinToCelsius(body!!.main.temp_min)+"°"
-        activityMainBinding.tvFeelsLke.text="Feel Alike "+kelvinToCelsius(body!!.main.feels_like)+"°"
-        activityMainBinding.tvWeatherType.text=body.weather[0].main
-        activityMainBinding.tvSunrise.text=timeStampToLocalDate(body.sys.sunrise.toLong())
-        activityMainBinding.tvSunset.text=timeStampToLocalDate(body.sys.sunset.toLong())
-        activityMainBinding.tvPressure.text=body.main.pressure.toString()
-        activityMainBinding.tvHumidity.text=body.main.humidity.toString()+"%"
-        activityMainBinding.tvWindSpeed.text = body.wind.speed.toString()+" m/s"
-        activityMainBinding.tvTempF.text=""+((kelvinToCelsius(body.main.temp)).times(1.8).plus(32).roundToInt())
-        activityMainBinding.etGetCityName.setText(body.name)
-        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body!!.main.temp)+"°C"
+    private fun setDataOnView(body: ModelClass?, position: Int) {
+        val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm")
+        val currentDate = sdf.format(Date())
+        activityMainBinding.tvDateAndTime.text = currentDate
 
-        updateUI(body.weather[0].id)
+        // Mise à jour des données du fragment et notification à l'adaptateur
+        val humidity = body?.main?.humidity?.toString() ?: "N/A"
+        val pressure = body?.main?.pressure ?: 0
+
+        // Mettre à jour les données du fragment Humidity
+        val humidityBundle = Bundle()
+        humidityBundle.putString("humidity", humidity)
+        weatherFragmentAdapter.setFragmentData(0, humidityBundle)
+
+        // Mettre à jour les données du fragment Pressure
+        val pressureBundle = Bundle()
+        pressureBundle.putInt("pressure", pressure)
+        weatherFragmentAdapter.setFragmentData(1, pressureBundle)
+
+        // common data to be displayed in all views/fragments
+        activityMainBinding.tvDayMaxTemp.text = "Day " + kelvinToCelsius(body!!.main.temp_max) + "°"
+        activityMainBinding.tvDayMinTemp.text = "Night" + kelvinToCelsius(body!!.main.temp_min) + "°"
+        activityMainBinding.tvFeelsLke.text = "Feel Alike " + kelvinToCelsius(body!!.main.feels_like) + "°"
+        activityMainBinding.tvWeatherType.text = body?.weather?.get(0)?.main
+        activityMainBinding.tvSunrise.text = timeStampToLocalDate(body.sys.sunrise.toLong())
+        activityMainBinding.tvWindSpeed.text = body?.wind?.speed.toString() + " m/s"
+        activityMainBinding.tvTempF.text = "" + ((kelvinToCelsius(body?.main?.temp ?: 0.0)).times(1.8).plus(32).roundToInt())
+        activityMainBinding.etGetCityName.setText(body?.name)
+        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
+
+        updateUI(body?.weather?.get(0)?.id ?: 0)
+        weatherFragmentAdapter.notifyDataSetChanged()
+    }
 
 
+    private fun onPageSelected(position: Int) {
+        setDataOnView(modelClassData, position)
     }
 
     private fun updateUI(id : Int) {
