@@ -38,10 +38,12 @@ import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
+    private val PERMISSIONS_REQUEST_CODE = 123
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var activityMainBinding: ActivityMainBinding
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
@@ -50,20 +52,51 @@ class MainActivity : AppCompatActivity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         activityMainBinding.rlMainLayout.visibility = View.GONE
 
-        getCurrentLocation()
-        activityMainBinding.etGetCityName.setOnEditorActionListener( { v, actionId, KeyEvent ->
-            if(actionId==EditorInfo.IME_ACTION_SEARCH){
+        // Vérifier si les permissions ont déjà été accordées
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Les permissions ont déjà été accordées
+            initUI()
+        } else {
+            // Les permissions n'ont pas encore été accordées, les demander à l'utilisateur
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSIONS_REQUEST_CODE)
+        }
+
+        activityMainBinding.etGetCityName.setOnEditorActionListener({ v, actionId, KeyEvent ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 getCityWeather(activityMainBinding.etGetCityName.text.toString())
                 val view = this.currentFocus
-                if(view!=null){
-                    val imm:InputMethodManager=getSystemService(INPUT_METHOD_SERVICE)as InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken,0)
+                if (view != null) {
+                    val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
                 true
-            }else false
-        } )
+            } else false
+        })
+    }
 
+    private fun initUI() {
+        // Initialiser l'interface utilisateur ici
+        activityMainBinding.rlMainLayout.visibility = View.VISIBLE
+        getCurrentLocation()
+        // ...
+    }
+
+// The rest of your code remains the same.
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            // Vérifier si l'utilisateur a accordé les permissions
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Les permissions ont été accordées, initialiser l'interface utilisateur
+                initUI()
+            } else {
+                // Les permissions ont été refusées, afficher un message ou quitter l'application
+                finish()
+            }
+        }
     }
 
     private fun getCityWeather(cityName : String){
@@ -73,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call:Call<ModelClass>, response: Response<ModelClass>){
 
-                    setDataOnView(response.body())
+                setDataOnView(response.body())
 
             }
 
@@ -87,16 +120,17 @@ class MainActivity : AppCompatActivity() {
         const val API_KEY = "768ad9b8668e5007738ef583962d1679"
     }
     private fun getCurrentLocation(){
+
         if (checkPermissions()){
             if(isLocationEnabled()){
                 if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION )
-                != PackageManager.PERMISSION_GRANTED){
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION )
+                    != PackageManager.PERMISSION_GRANTED){
                     requestPermission()
                     return
                 }
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener(this){
-                    task -> val location : Location? = task.result
+                        task -> val location : Location? = task.result
                     if(location==null){
                         Toast.makeText(this,"Null received", Toast.LENGTH_SHORT).show()
                     }else{
