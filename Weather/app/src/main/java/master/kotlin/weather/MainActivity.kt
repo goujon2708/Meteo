@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.rlMainLayout.visibility = View.GONE
 
         // Initialisation de la liste
-        this.villesFavorites = arrayListOf("Favoris", "Le Mans", "Paris")
+        this.villesFavorites = arrayListOf("Favoris", "Dubai", "Paris", "Madrid")
 
         // Récupération du spinner
         this.spinner = findViewById(R.id.sp_favoris)
@@ -115,11 +115,13 @@ class MainActivity : AppCompatActivity() {
                 id: Long) {
 
                 if(parent?.getItemAtPosition(position).toString() != "Favoris") {
+
                     getCityWeather(parent?.getItemAtPosition(position).toString())
+                    notFavorisIV.visibility = View.GONE
+                    favorisIV.visibility = View.VISIBLE
                 }
 
                 Toast.makeText(applicationContext, "ville sélectionnée : " + villesFavorites[position], Toast.LENGTH_SHORT).show()
-
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -172,10 +174,22 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.etGetCityName.setOnEditorActionListener { v, actionId, KeyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 getCityWeather(activityMainBinding.etGetCityName.text.toString())
+
+                if(this.villesFavorites.contains(this.editText.text.toString())) {
+
+                    notFavorisIV.visibility = View.GONE
+                    favorisIV.visibility = View.VISIBLE
+                } else {
+
+                    favorisIV.visibility = View.GONE
+                    notFavorisIV.visibility = View.VISIBLE
+                }
+
                 val view = this.currentFocus
+
                 if (view != null) {
-                    val imm: InputMethodManager =
-                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+
+                    val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
