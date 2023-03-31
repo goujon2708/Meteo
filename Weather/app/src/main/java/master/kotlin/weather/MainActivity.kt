@@ -36,6 +36,7 @@ import kotlin.math.roundToInt
 
 
 class MainActivity : AppCompatActivity() {
+
     private val PERMISSIONS_REQUEST_CODE = 123
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -44,10 +45,19 @@ class MainActivity : AppCompatActivity() {
     private var modelClassData: ModelClass? = null // Déclaration de la variable de classe
     private lateinit var weatherFragmentAdapter: WeatherFragmentAdapter
 
+    // Liste des favoris
     private lateinit var villesFavorites: ArrayList<String>
+
+    // Spinner du menu déroulant des favoris
     private lateinit var spinner : Spinner
+
+    // Adapter pour la liste des favoris
     private lateinit var arrayAdapter: ArrayAdapter<String>
+
+    // Sert pour récupérer la valeur courant dans la barre de recherche
     private lateinit var editText: EditText
+
+    // icones des favoris (une étoile pleine jaune et une étoile vide)
     private lateinit var notFavorisIV: ImageView
     private lateinit var favorisIV: ImageView
 
@@ -102,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         // Gestion de la maj du menu favoris
         this.notFavorisIV.setOnClickListener {
 
+            // l'utilisateur choisit d'ajouter la ville aux favoris
             notFavorisIV.visibility = View.GONE
             favorisIV.visibility = View.VISIBLE
             majFavoris(this.editText.text.toString())
@@ -109,6 +120,7 @@ class MainActivity : AppCompatActivity() {
 
         this.favorisIV.setOnClickListener {
 
+            // L'utilisateur choisit de supprimer la liste des favoris
             favorisIV.visibility = View.GONE
             notFavorisIV.visibility = View.VISIBLE
             majFavoris(this.editText.text.toString())
@@ -148,17 +160,27 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Met à jour la liste des favoris lorsque l'utilisateur interagit avec le bouton "favoris"
+     * Met également à jour le menu déroulant
+     */
     private fun majFavoris(nomVille: String) {
 
+        // suppression de la ville courante de la liste des favoris
         if(this.villesFavorites.contains(nomVille)) {
 
             this.villesFavorites.remove(nomVille)
+
+            // Maj de l'IHM
             this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, this.villesFavorites)
             this.spinner.adapter = this.arrayAdapter
 
+        // ajout de la ville courante dans la liste des favoris
         } else {
 
             this.villesFavorites.add(nomVille)
+
+            // Maj de l'IHM
             this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, this.villesFavorites)
             this.spinner.adapter = this.arrayAdapter
         }
