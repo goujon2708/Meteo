@@ -74,7 +74,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"> -->
 
-                <ImageView
+            <ImageView
+                android:id="@+id/iv_notFavoris"
+                android:layout_width="35dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="355dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="28dp"
+                android:foregroundGravity="center"
+                android:translationZ="2dp"
+                app:srcCompat="@drawable/favorite" />
+
+            <ImageView
+                android:id="@+id/iv_favoris"
+                android:layout_width="35dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="355dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="28dp"
+                android:foregroundGravity="center"
+                android:translationZ="2dp"
+                app:srcCompat="@drawable/star"
+                android:visibility="gone"/>
+
+            <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -90,7 +113,8 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginLeft="50dp"
                 android:layout_marginRight="50dp"
-                android:layout_centerHorizontal="true">
+                android:layout_centerHorizontal="true"
+                android:background="@color/purple_200">
 
             </Spinner>
 

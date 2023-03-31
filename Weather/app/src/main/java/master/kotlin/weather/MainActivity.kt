@@ -14,10 +14,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -80,6 +77,20 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+
+        val imageView1 = findViewById<ImageView>(R.id.iv_notFavoris)
+        val imageView2 = findViewById<ImageView>(R.id.iv_favoris)
+
+        imageView1.setOnClickListener {
+            imageView1.visibility = View.GONE
+            imageView2.visibility = View.VISIBLE
+        }
+
+        imageView2.setOnClickListener {
+            imageView2.visibility = View.GONE
+            imageView1.visibility = View.VISIBLE
+        }
+
 
 
         // Set up the ViewPager with a PagerAdapter
