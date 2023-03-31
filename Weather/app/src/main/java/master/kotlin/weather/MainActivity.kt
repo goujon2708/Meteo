@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract.Data
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
@@ -18,8 +17,6 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.ViewDataBinding
-import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -29,11 +26,11 @@ import master.kotlin.weather.databinding.ActivityMainBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.math.RoundingMode
-import java.text.SimpleDateFormat
+import java.math.RoundingMode import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -47,21 +44,40 @@ class MainActivity : AppCompatActivity() {
     private var modelClassData: ModelClass? = null // Déclaration de la variable de classe
     private lateinit var weatherFragmentAdapter: WeatherFragmentAdapter
 
-    val villesFavorites = arrayOf("Le Mans", "Paris", "Nice")
+    private lateinit var villesFavorites: ArrayList<String>
+    private lateinit var spinner : Spinner
+    private lateinit var arrayAdapter: ArrayAdapter<String>
+    private lateinit var editText: EditText
+    private lateinit var notFavorisIV: ImageView
+    private lateinit var favorisIV: ImageView
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
         activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
         supportActionBar?.hide()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         activityMainBinding.rlMainLayout.visibility = View.GONE
 
-        /* Gestion du menu déroulant des villes favorites */
-        val spinner = findViewById<Spinner>(R.id.sp_favoris)
-        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, villesFavorites)
+        // Initialisation de la liste
+        this.villesFavorites = arrayListOf("Le Mans")
+
+        // Récupération du spinner
+        this.spinner = findViewById(R.id.sp_favoris)
+
+        // Construction du menu déroulant
+        this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, villesFavorites)
+
+        // Récupération de la valeur rentrée dans la barre de recherche
+        this.editText = findViewById(R.id.et_get_city_name)
+
+        // Affichage du spinner
         spinner.adapter = arrayAdapter
+
+        // Affichage du toast à la sélection d'une ville
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -78,17 +94,24 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val imageView1 = findViewById<ImageView>(R.id.iv_notFavoris)
-        val imageView2 = findViewById<ImageView>(R.id.iv_favoris)
+        // Récupration des icones "favoris"
+        this.notFavorisIV = findViewById(R.id.iv_notFavoris)
+        this.favorisIV = findViewById(R.id.iv_favoris)
 
-        imageView1.setOnClickListener {
-            imageView1.visibility = View.GONE
-            imageView2.visibility = View.VISIBLE
+
+        // Gestion de la maj du menu favoris
+        this.notFavorisIV.setOnClickListener {
+
+            notFavorisIV.visibility = View.GONE
+            favorisIV.visibility = View.VISIBLE
+            majFavoris(this.editText.text.toString())
         }
 
-        imageView2.setOnClickListener {
-            imageView2.visibility = View.GONE
-            imageView1.visibility = View.VISIBLE
+        this.favorisIV.setOnClickListener {
+
+            favorisIV.visibility = View.GONE
+            notFavorisIV.visibility = View.VISIBLE
+            majFavoris(this.editText.text.toString())
         }
 
 
@@ -109,20 +132,37 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSIONS_REQUEST_CODE)
         }
 
-        activityMainBinding.etGetCityName.setOnEditorActionListener({ v, actionId, KeyEvent ->
+        activityMainBinding.etGetCityName.setOnEditorActionListener { v, actionId, KeyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 getCityWeather(activityMainBinding.etGetCityName.text.toString())
                 val view = this.currentFocus
                 if (view != null) {
-                    val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    val imm: InputMethodManager =
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
                 true
             } else false
-        })
+        }
     }
 
+
+    private fun majFavoris(nomVille: String) {
+
+        if(this.villesFavorites.contains(nomVille)) {
+
+            this.villesFavorites.remove(nomVille)
+            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, this.villesFavorites)
+            this.spinner.adapter = this.arrayAdapter
+
+        } else {
+
+            this.villesFavorites.add(nomVille)
+            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, this.villesFavorites)
+            this.spinner.adapter = this.arrayAdapter
+        }
+    }
 
 
     private fun initUI() {
