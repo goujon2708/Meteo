@@ -32,4 +32,8 @@ class PressureFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun updatePressure(pressure: Int) {
+        binding.tvPressureValue?.text = pressure.toString()
+    }
 }

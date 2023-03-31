@@ -1,5 +1,6 @@
 package master.kotlin.weather
 
+import PressureFragment
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,6 +31,7 @@ import retrofit2.Response
 import java.math.RoundingMode import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
@@ -135,23 +137,23 @@ class MainActivity : AppCompatActivity() {
 
         // Gestion de la maj du menu favoris
         this.notFavorisIV.setOnClickListener {
-
             // l'utilisateur choisit d'ajouter la ville aux favoris
             notFavorisIV.visibility = View.GONE
             favorisIV.visibility = View.VISIBLE
             majFavoris(this.editText.text.toString())
             // Requête API et maj de l'interface
             getCityWeather(this.editText.text.toString())
+            updateViewPager() // Ajoutez cette ligne
         }
 
         this.favorisIV.setOnClickListener {
-
             // L'utilisateur choisit de supprimer la liste des favoris
             favorisIV.visibility = View.GONE
             notFavorisIV.visibility = View.VISIBLE
             majFavoris(this.editText.text.toString())
             // Requête API et maj de l'interface
             getCityWeather(this.editText.text.toString())
+            updateViewPager() // Ajoutez cette ligne
         }
 
 
@@ -193,6 +195,7 @@ class MainActivity : AppCompatActivity() {
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
+                updateViewPager()
                 true
             } else false
         }
@@ -236,6 +239,11 @@ class MainActivity : AppCompatActivity() {
 // The rest of your code remains the same.
 
 
+    private fun updateViewPager() {
+        weatherFragmentAdapter = WeatherFragmentAdapter(this)
+        viewPager.adapter = weatherFragmentAdapter
+        viewPager.adapter?.notifyDataSetChanged()
+    }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
@@ -355,6 +363,46 @@ class MainActivity : AppCompatActivity() {
         pressureBundle.putInt("pressure", pressure)
         weatherFragmentAdapter.setFragmentData(1, pressureBundle)
 
+        val temperatureBundle = Bundle()
+        temperatureBundle.putInt("tempF", kelvinToCelsius(body?.main?.temp ?: 0.0).times(1.8).plus(32).roundToInt())
+
+        val windBundle = Bundle()
+        windBundle.putDouble("windSpeed", body?.wind?.speed ?: 0.0)
+
+        val sunrise = timeStampToLocalDate(body?.sys?.sunrise?.toLong() ?: 0)
+        val sunset = timeStampToLocalDate(body?.sys?.sunset?.toLong() ?: 0)
+        val sunInfoBundle = Bundle()
+        sunInfoBundle.putString("sunrise", sunrise)
+        sunInfoBundle.putString("sunset", sunset)
+
+        weatherFragmentAdapter.setFragmentData(0, humidityBundle)
+        weatherFragmentAdapter.setFragmentData(1, pressureBundle)
+        weatherFragmentAdapter.setFragmentData(2, windBundle)
+        weatherFragmentAdapter.setFragmentData(3, temperatureBundle)
+        weatherFragmentAdapter.setFragmentData(4, sunInfoBundle) // Utilisez l'index 4 pour le fragment SunInfo
+
+        weatherFragmentAdapter.notifyDataSetChanged()
+
+        // Mettre à jour les données du fragment Humidity
+        val humidityFragment = weatherFragmentAdapter.getFragment(0) as? HumidityFragment
+        humidityFragment?.updateHumidity(humidity)
+
+        // Mettre à jour les données du fragment SunInfo
+        val sunInfoFragment = weatherFragmentAdapter.getFragment(4) as? SunInfoFragment
+        sunInfoFragment?.updateSunInfo(sunrise, sunset)
+
+        // Mettre à jour les données du fragment Pressure
+        val pressureFragment = weatherFragmentAdapter.getFragment(1) as? PressureFragment
+        pressureFragment?.updatePressure(pressure)
+
+        // Mettre à jour les données du fragment Wind
+        val windFragment = weatherFragmentAdapter.getFragment(2) as? WindFragment
+        windFragment?.updateWindSpeed(body?.wind?.speed ?: 0.0)
+
+        // Mettre à jour les données du fragment Temperature
+        val temperatureFragment = weatherFragmentAdapter.getFragment(3) as? TemperatureFragment
+        temperatureFragment?.updateTempF(kelvinToCelsius(body?.main?.temp ?: 0.0).times(1.8).plus(32).roundToInt())
+
         // common data to be displayed in all views/fragments
         activityMainBinding.tvDayMaxTemp.text = "Jour " + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"
         activityMainBinding.tvDayMinTemp.text = "Nuit " + kelvinToCelsius(body!!.main.temp_min).roundToInt() + "°C"
@@ -367,7 +415,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
 
         updateUI(body?.weather?.get(0)?.id ?: 0)
-        weatherFragmentAdapter.notifyDataSetChanged()
+
     }
 
 
@@ -524,13 +572,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun timeStampToLocalDate(timeStamp: Long): String{
-        val localTime= timeStamp.let{
-            Instant.ofEpochSecond(it).
-                    atZone(ZoneId.systemDefault()).toLocalTime()
+    private fun timeStampToLocalDate(timeStamp: Long): String {
+        val localDateTime = timeStamp.let {
+            Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toLocalDateTime()
         }
 
-        return localTime.toString()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return localDateTime.format(formatter)
     }
     private fun isLocationEnabled() : Boolean{
         val locationManager: LocationManager =

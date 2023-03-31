@@ -9,6 +9,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
 
+    private val fragments: MutableMap<Int, Fragment> = HashMap()
     private val fragmentDataList = mutableListOf<Bundle>()
 
     override fun getItemCount(): Int {
@@ -19,11 +20,23 @@ class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
         val fragment = when (position) {
             0 -> HumidityFragment()
             1 -> PressureFragment()
-            2 -> SunSetFragment()
-            else -> throw IllegalArgumentException("Invalid position")
+            2 -> WindFragment()
+            3 -> TemperatureFragment()
+            4 -> SunInfoFragment()
+            else -> throw IllegalStateException("Invalid fragment position")
         }
-        fragment.arguments = fragmentDataList[position]
+
+        fragments[position] = fragment
+
+        // Ajoutez ces lignes pour fournir les données aux fragments
+        if (position < fragmentDataList.size) {
+            fragment.arguments = fragmentDataList[position]
+        }
+
         return fragment
+    }
+    fun getFragment(position: Int): Fragment? {
+        return fragments[position]
     }
 
     fun setFragmentData(position: Int, data: Bundle) {
@@ -31,5 +44,9 @@ class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
             fragmentDataList.addAll(List(position + 1 - fragmentDataList.size) { Bundle() })
         }
         fragmentDataList[position] = data
+
+        // Ajoutez ces lignes pour mettre à jour les arguments des fragments existants
+        val existingFragment = fragments[position]
+        existingFragment?.arguments = data
     }
 }
