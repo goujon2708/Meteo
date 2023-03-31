@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -73,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.rlMainLayout.visibility = View.GONE
 
         // Initialisation de la liste
-        this.villesFavorites = arrayListOf("Le Mans")
+        this.villesFavorites = arrayListOf("Favoris", "Le Mans", "Paris")
 
         // Récupération du spinner
         this.spinner = findViewById(R.id.sp_favoris)
@@ -84,6 +85,24 @@ class MainActivity : AppCompatActivity() {
         // Récupération de la valeur rentrée dans la barre de recherche
         this.editText = findViewById(R.id.et_get_city_name)
 
+        // Récupration des icones "favoris"
+        this.notFavorisIV = findViewById(R.id.iv_notFavoris)
+        this.favorisIV = findViewById(R.id.iv_favoris)
+
+        // Au lancement de l'application, si la ville où est localisé l'utilisateur est déjà ajoutée aux favoris
+        // alors affichage de l'étoile pleine
+        // sinon on afficge l'étoile vide
+        if(this.villesFavorites.contains(this.editText.text.toString())) {
+
+            notFavorisIV.visibility = View.GONE
+            favorisIV.visibility = View.VISIBLE
+        } else {
+
+            favorisIV.visibility = View.GONE
+            notFavorisIV.visibility = View.VISIBLE
+        }
+
+
         // Affichage du spinner
         spinner.adapter = arrayAdapter
 
@@ -93,9 +112,14 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
-                id: Long
-            ) {
+                id: Long) {
+
+                if(parent?.getItemAtPosition(position).toString() != "Favoris") {
+                    getCityWeather(parent?.getItemAtPosition(position).toString())
+                }
+
                 Toast.makeText(applicationContext, "ville sélectionnée : " + villesFavorites[position], Toast.LENGTH_SHORT).show()
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -104,9 +128,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        // Récupration des icones "favoris"
-        this.notFavorisIV = findViewById(R.id.iv_notFavoris)
-        this.favorisIV = findViewById(R.id.iv_favoris)
+
 
 
         // Gestion de la maj du menu favoris
@@ -116,6 +138,8 @@ class MainActivity : AppCompatActivity() {
             notFavorisIV.visibility = View.GONE
             favorisIV.visibility = View.VISIBLE
             majFavoris(this.editText.text.toString())
+            // Requête API et maj de l'interface
+            getCityWeather(this.editText.text.toString())
         }
 
         this.favorisIV.setOnClickListener {
@@ -124,8 +148,9 @@ class MainActivity : AppCompatActivity() {
             favorisIV.visibility = View.GONE
             notFavorisIV.visibility = View.VISIBLE
             majFavoris(this.editText.text.toString())
+            // Requête API et maj de l'interface
+            getCityWeather(this.editText.text.toString())
         }
-
 
 
         // Set up the ViewPager with a PagerAdapter
@@ -172,7 +197,7 @@ class MainActivity : AppCompatActivity() {
             this.villesFavorites.remove(nomVille)
 
             // Maj de l'IHM
-            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, this.villesFavorites)
+            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, this.villesFavorites)
             this.spinner.adapter = this.arrayAdapter
 
         // ajout de la ville courante dans la liste des favoris
@@ -181,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             this.villesFavorites.add(nomVille)
 
             // Maj de l'IHM
-            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, this.villesFavorites)
+            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, this.villesFavorites)
             this.spinner.adapter = this.arrayAdapter
         }
     }
@@ -227,6 +252,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
     companion object{
         private const val PERMISSION_REQUEST_ACCESS_LOCATION=100
         const val API_KEY = "768ad9b8668e5007738ef583962d1679"
@@ -263,7 +289,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    private fun requestPermission(){
+    private fun requestPermission() {
+
         ActivityCompat.requestPermissions(
             this, arrayOf(
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
