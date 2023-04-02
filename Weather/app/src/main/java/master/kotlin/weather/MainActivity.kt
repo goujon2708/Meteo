@@ -408,9 +408,6 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.tvDayMinTemp.text = "Nuit " + kelvinToCelsius(body!!.main.temp_min).roundToInt() + "°C"
         activityMainBinding.tvFeelsLke.text = "Ressenti " + kelvinToCelsius(body!!.main.feels_like).roundToInt() + "°C"
         activityMainBinding.tvWeatherType.text = body.weather[0].main
-        activityMainBinding.tvSunrise.text = timeStampToLocalDate(body.sys.sunrise.toLong())
-        activityMainBinding.tvWindSpeed.text = body?.wind?.speed.toString() + " m/s"
-        activityMainBinding.tvTempF.text = "" + ((kelvinToCelsius(body?.main?.temp ?: 0.0)).times(1.8).plus(32).roundToInt())
         activityMainBinding.etGetCityName.setText(body?.name)
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
 
@@ -434,14 +431,6 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.thunderstorm_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.thunderstorm_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.thunderstorm_bg
-            )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.thunderstorm_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunderstorm)
@@ -451,14 +440,6 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = resources.getColor(R.color.drizzle)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.drizzle))
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.drizzle_bg
-            )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.drizzle_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
                 R.drawable.drizzle_bg
             )
@@ -474,14 +455,7 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.rainy_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.rainy_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.rainy_bg
-            )
+
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.rainy_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.rain)
@@ -491,14 +465,6 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = resources.getColor(R.color.snow)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.snow))
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.snow_bg_img
-            )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.snow_bg_img
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
                 R.drawable.snow_bg_img
             )
@@ -514,14 +480,6 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.mist_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.mist_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.mist_bg
-            )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.mist_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.mist)
@@ -534,14 +492,6 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.clear_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.clear_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.clear_bg
-            )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.clear_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.clear)
@@ -551,14 +501,6 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = resources.getColor(R.color.clouds)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clouds))
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.cloud_bg
-            )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.cloud_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
                 R.drawable.cloud_bg
             )
