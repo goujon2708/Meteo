@@ -80,7 +80,8 @@ class MainActivity : AppCompatActivity() {
         this.spinner = findViewById(R.id.sp_favoris)
 
         // Construction du menu déroulant
-        this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, villesFavorites)
+        this.arrayAdapter = ArrayAdapter(this, R.layout.color_spinner_layout, villesFavorites)
+        this.arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
 
         // Récupération de la valeur rentrée dans la barre de recherche
         this.editText = findViewById(R.id.et_get_city_name)
@@ -211,7 +212,8 @@ class MainActivity : AppCompatActivity() {
             this.villesFavorites.remove(nomVille)
 
             // Maj de l'IHM
-            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, this.villesFavorites)
+            this.arrayAdapter = ArrayAdapter(this, R.layout.color_spinner_layout, this.villesFavorites)
+            this.arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
             this.spinner.adapter = this.arrayAdapter
 
         // ajout de la ville courante dans la liste des favoris
@@ -220,7 +222,8 @@ class MainActivity : AppCompatActivity() {
             this.villesFavorites.add(nomVille)
 
             // Maj de l'IHM
-            this.arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, this.villesFavorites)
+            this.arrayAdapter = ArrayAdapter(this, R.layout.color_spinner_layout, this.villesFavorites)
+            this.arrayAdapter.setDropDownViewResource(R.layout.spinner_dropdown_layout)
             this.spinner.adapter = this.arrayAdapter
         }
     }
@@ -232,9 +235,6 @@ class MainActivity : AppCompatActivity() {
         getCurrentLocation()
         // ...
     }
-
-// The rest of your code remains the same.
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
