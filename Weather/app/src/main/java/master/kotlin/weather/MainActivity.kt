@@ -117,6 +117,8 @@ class MainActivity : AppCompatActivity() {
                     getCityWeather(parent?.getItemAtPosition(position).toString())
                     notFavorisIV.visibility = View.GONE
                     favorisIV.visibility = View.VISIBLE
+                } else {
+                    getCurrentLocation()
                 }
 
                 Toast.makeText(applicationContext, "ville sélectionnée : " + villesFavorites[position], Toast.LENGTH_SHORT).show()
@@ -288,7 +290,9 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLocation() {
 
         if (checkPermissions()) {
+
             if(isLocationEnabled()) {
+
                 if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED
                     &&
