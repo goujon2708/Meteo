@@ -190,6 +190,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSIONS_REQUEST_CODE)
         }
 
+        // gestion de la saisie au clavier
         activityMainBinding.etGetCityName.setOnEditorActionListener { v, actionId, KeyEvent ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 getCityWeather(activityMainBinding.etGetCityName.text.toString())
@@ -212,6 +213,7 @@ class MainActivity : AppCompatActivity() {
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
+                fetchWeatherForecast()
                 updateViewPager()
                 true
             } else false
@@ -425,7 +427,6 @@ class MainActivity : AppCompatActivity() {
             override fun onFailure(call: Call<ForecastModel>, t: Throwable) {
                 Log.e("API CALL", "Error fetching forecast: ${t.message}")
                 activityMainBinding.pbLoading.visibility = View.GONE
-                // Gérez l'échec de l'appel
             }
         })
     }
