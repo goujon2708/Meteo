@@ -1,5 +1,6 @@
 package master.kotlin.weather
 
+import ForecastFragment
 import PressureFragment
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,11 +10,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
 
-    private val fragments: MutableMap<Int, Fragment> = HashMap()
-    private val fragmentDataList = mutableListOf<Bundle>()
+    val fragments: MutableMap<Int, Fragment> = HashMap()
+    val fragmentDataList = mutableListOf<Bundle>()
 
     override fun getItemCount(): Int {
-        return fragmentDataList.size
+        return 6
     }
 
     override fun createFragment(position: Int): Fragment {
@@ -23,6 +24,7 @@ class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
             2 -> WindFragment()
             3 -> TemperatureFragment()
             4 -> SunInfoFragment()
+            5 -> ForecastFragment() // Ajout du cas pour ForecastFragment
             else -> throw IllegalStateException("Invalid fragment position")
         }
 
@@ -35,6 +37,7 @@ class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
 
         return fragment
     }
+
     fun getFragment(position: Int): Fragment? {
         return fragments[position]
     }

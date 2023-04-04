@@ -1,5 +1,6 @@
 package master.kotlin.weather
 
+import ForecastFragment
 import PressureFragment
 import android.content.Context
 import android.content.Intent
@@ -22,6 +23,9 @@ import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import master.kotlin.weather.POJO.ForecastModel
 import master.kotlin.weather.POJO.ModelClass
 import master.kotlin.weather.Utilities.ApiUtilities
 import master.kotlin.weather.databinding.ActivityMainBinding
@@ -63,6 +67,9 @@ class MainActivity : AppCompatActivity() {
     // icones des favoris (une étoile pleine jaune et une étoile vide)
     private lateinit var notFavorisIV: ImageView
     private lateinit var favorisIV: ImageView
+
+    private lateinit var tabLayout: TabLayout
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -164,6 +171,11 @@ class MainActivity : AppCompatActivity() {
         weatherFragmentAdapter = WeatherFragmentAdapter(this)
         viewPager.adapter = weatherFragmentAdapter // Set the adapter after initializing ViewPager2
 
+        viewPager.adapter = weatherFragmentAdapter // Définir l'adaptateur après l'initialisation de ViewPager2
+
+
+        tabLayout = activityMainBinding.tabLayout
+
         // Vérifier si les permissions ont déjà été accordées
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // Les permissions ont déjà été accordées
@@ -233,7 +245,18 @@ class MainActivity : AppCompatActivity() {
         // Initialiser l'interface utilisateur ici
         activityMainBinding.rlMainLayout.visibility = View.VISIBLE
         getCurrentLocation()
-        // ...
+
+        val tabLayout = activityMainBinding.tabLayout
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            when (position) {
+                0 -> tab.text = "Humidité"
+                1 -> tab.text = "Pression"
+                2 -> tab.text = "Vitesse du Vent"
+                3 -> tab.text = "Température en Farhenheit"
+                4 -> tab.text = "Soleil"
+                5 -> tab.text = "Prévisions"
+            }
+        }.attach()
     }
 
 // The rest of your code remains the same.
@@ -279,38 +302,41 @@ class MainActivity : AppCompatActivity() {
         private const val PERMISSION_REQUEST_ACCESS_LOCATION=100
         const val API_KEY = "768ad9b8668e5007738ef583962d1679"
     }
-    private fun getCurrentLocation(){
+    private fun getCurrentLocation() {
 
-        if (checkPermissions()){
-            if(isLocationEnabled()){
-                if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION )
-                    != PackageManager.PERMISSION_GRANTED){
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED
+                ) {
                     requestPermission()
                     return
                 }
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener(this){
-                        task -> val location : Location? = task.result
-                    if(location==null){
-                        Toast.makeText(this,"Null received", Toast.LENGTH_SHORT).show()
-                    }else{
-                        fetchCurrentLocationWeather(
-                            location.latitude.toString(),
-                            location.longitude.toString()
-                        )
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener(this) { task ->
+                    val location: Location? = task.result
+                    if (location == null) {
+                        Toast.makeText(this, "Null received", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val latitude = location.latitude.toString()
+                        val longitude = location.longitude.toString()
+
+                        fetchCurrentLocationWeather(latitude, longitude)
+                        fetchWeatherForecast(latitude, longitude)
                     }
                 }
-            }else{
-                Toast.makeText(this, "Turn on location",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
 
-        }else{
+        } else {
             requestPermission()
         }
 
     }
+
     private fun requestPermission() {
 
         ActivityCompat.requestPermissions(
@@ -329,6 +355,7 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call:Call<ModelClass>, response: Response<ModelClass>){
                 if(response.isSuccessful){
                     setDataOnView(response.body(),viewPager.currentItem)
+                    Log.d("API CALL", "Forecast retrieved: $response")
                 }
             }
 
@@ -340,6 +367,36 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun fetchWeatherForecast(latitude: String, longitude: String) {
+        activityMainBinding.pbLoading.visibility = View.VISIBLE
+        ApiUtilities.getApiInterface()?.getWeatherForecast(
+            latitude,
+            longitude,
+            "current,minutely,hourly,alerts",
+            "metric",
+            API_KEY
+        )?.enqueue(object : Callback<ForecastModel> {
+
+            override fun onResponse(call: Call<ForecastModel>, response: Response<ForecastModel>) {
+                if (response.isSuccessful) {
+                    val forecast = response.body()
+                    // Passer les données de prévision au ForecastFragment
+                    val forecastFragment = supportFragmentManager.findFragmentByTag("forecastFragment") as ForecastFragment?
+                    forecastFragment?.updateForecastData(forecast)
+                } else {
+                    Log.e("API CALL", "Failed to retrieve forecast: ${response.code()}")
+                }
+                activityMainBinding.pbLoading.visibility = View.GONE
+            }
+
+            override fun onFailure(call: Call<ForecastModel>, t: Throwable) {
+                Log.e("API CALL", "Error fetching forecast: ${t.message}")
+                activityMainBinding.pbLoading.visibility = View.GONE
+                // Gérez l'échec de l'appel
+            }
+        })
     }
 
 

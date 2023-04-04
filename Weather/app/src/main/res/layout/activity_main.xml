@@ -245,18 +245,31 @@
                 android:layout_alignParentBottom="true"
                 tools:context=".MainActivity">
 
-                <FrameLayout
-                    android:id="@+id/fragment_container"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
+                    <!-- ViewPager2 en haut -->
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/viewPager"
                         android:layout_width="match_parent"
-                        android:layout_height="190dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_gravity="bottom" />
-                </FrameLayout>
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <!-- TabLayout en bas -->
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tabLayout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/black"
+                        app:tabGravity="fill"
+                        app:tabMode="fixed"
+                        app:tabIndicatorHeight="3dp"/>
+
+                </LinearLayout>
+
+
             </RelativeLayout>
         </RelativeLayout>
 
