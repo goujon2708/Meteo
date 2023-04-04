@@ -122,11 +122,11 @@
 
 
     <!-- Day 3 -->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/day3_date"
@@ -153,7 +153,6 @@
             android:textColor="@android:color/black"
             android:layout_weight="1" />
 
-
         <ImageView
             android:id="@+id/day3_icon"
             android:layout_width="wrap_content"
@@ -161,6 +160,7 @@
             android:layout_weight="1" />
 
     </LinearLayout>
+
 
 
 </LinearLayout>
