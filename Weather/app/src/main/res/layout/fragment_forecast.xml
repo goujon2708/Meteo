@@ -7,90 +7,160 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Date"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Temp. max"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Temp. min"
+            android:textSize="18sp"
+            android:textColor="@android:color/black" />
+        
+
+    </LinearLayout>
+
     <!-- Day 1 -->
-    <TextView
-        android:id="@+id/day1_date"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Day 1 Date"
-        android:textSize="18sp" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/day1_temp_max"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/day1_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Demain : "
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/day1_temp_min"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/day1_temp_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/day1_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/day1_temp_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
+
+
+        <ImageView
+            android:id="@+id/day1_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <!-- Day 2 -->
 
-    <TextView
-        android:id="@+id/day2_date"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Day 2 Date"
-        android:textSize="18sp" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/day2_temp_max"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/day2_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Demain : "
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/day2_temp_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/day2_temp_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/day2_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+
+    <!-- Day 3 -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Day 2 Max Temp"
-        android:textSize="16sp" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/day2_temp_min"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day 2 Min Temp"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/day3_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Demain : "
+            android:textSize="18sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/day2_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day 2 Weather Description"
-        android:textSize="16sp" />
+        <TextView
+            android:id="@+id/day3_temp_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
 
-    <!-- Répétez les TextViews pour les jours 2 et 3 -->
+        <TextView
+            android:id="@+id/day3_temp_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/day3_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day 3 Date"
-        android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/day3_temp_max"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day 3 Max Temp"
-        android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/day3_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/day3_temp_min"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day 3 Min Temp"
-        android:textSize="16sp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/day3_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Day 3 Weather Description"
-        android:textSize="16sp" />
 
 </LinearLayout>

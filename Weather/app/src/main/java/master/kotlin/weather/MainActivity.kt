@@ -25,6 +25,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 import master.kotlin.weather.POJO.ForecastModel
 import master.kotlin.weather.POJO.ModelClass
 import master.kotlin.weather.Utilities.ApiUtilities
@@ -382,14 +383,23 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ForecastModel>, response: Response<ForecastModel>) {
                 if (response.isSuccessful) {
                     val forecast = response.body()
+                    // Convertir l'objet ForecastModel en chaîne JSON
+                    val gson = Gson()
+                    val jsonForecast = gson.toJson(forecast)
+                    Log.d("API CALL", "Forecast retrieved: $jsonForecast")
+
                     // Passer les données de prévision au ForecastFragment
-                    val forecastFragment = supportFragmentManager.findFragmentByTag("forecastFragment") as ForecastFragment?
-                    forecastFragment?.updateForecastData(forecast)
+                    val forecastData = Bundle().apply {
+                        putParcelable("forecast", forecast)
+                    }
+                    val adapter = viewPager.adapter as WeatherFragmentAdapter
+                    adapter.setFragmentData(5, forecastData) // 5 étant l'index de ForecastFragment dans l'adaptateur
                 } else {
                     Log.e("API CALL", "Failed to retrieve forecast: ${response.code()}")
                 }
                 activityMainBinding.pbLoading.visibility = View.GONE
             }
+
 
             override fun onFailure(call: Call<ForecastModel>, t: Throwable) {
                 Log.e("API CALL", "Error fetching forecast: ${t.message}")
