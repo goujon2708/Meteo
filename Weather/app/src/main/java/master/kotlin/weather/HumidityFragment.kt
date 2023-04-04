@@ -32,4 +32,8 @@ class HumidityFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun updateHumidity(humidity: String) {
+        binding.tvHumidityValue?.text = humidity
+    }
 }

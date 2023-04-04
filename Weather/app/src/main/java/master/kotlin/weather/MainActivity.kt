@@ -1,24 +1,32 @@
 package master.kotlin.weather
 
+import ForecastFragment
+import PressureFragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import master.kotlin.weather.POJO.ForecastModel
 import master.kotlin.weather.POJO.ModelClass
 import master.kotlin.weather.Utilities.ApiUtilities
 import master.kotlin.weather.databinding.ActivityMainBinding
@@ -28,6 +36,7 @@ import retrofit2.Response
 import java.math.RoundingMode import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
@@ -59,6 +68,9 @@ class MainActivity : AppCompatActivity() {
     // icones des favoris (une étoile pleine jaune et une étoile vide)
     private lateinit var notFavorisIV: ImageView
     private lateinit var favorisIV: ImageView
+
+    private lateinit var tabLayout: TabLayout
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -139,6 +151,7 @@ class MainActivity : AppCompatActivity() {
             majFavoris(this.editText.text.toString())
             // Requête API et maj de l'interface
             getCityWeather(this.editText.text.toString())
+            updateViewPager() // Ajoutez cette ligne
         }
 
         this.favorisIV.setOnClickListener {
@@ -149,6 +162,7 @@ class MainActivity : AppCompatActivity() {
             majFavoris(this.editText.text.toString())
             // Requête API et maj de l'interface
             getCityWeather(this.editText.text.toString())
+            updateViewPager() // Ajoutez cette ligne
         }
 
 
@@ -158,6 +172,11 @@ class MainActivity : AppCompatActivity() {
 
         weatherFragmentAdapter = WeatherFragmentAdapter(this)
         viewPager.adapter = weatherFragmentAdapter // Set the adapter after initializing ViewPager2
+
+        viewPager.adapter = weatherFragmentAdapter // Définir l'adaptateur après l'initialisation de ViewPager2
+
+
+        tabLayout = activityMainBinding.tabLayout
 
         // Vérifier si les permissions ont déjà été accordées
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -192,9 +211,9 @@ class MainActivity : AppCompatActivity() {
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
+                updateViewPager()
                 true
-            } else
-                false
+            } else false
         }
     }
 
@@ -236,6 +255,24 @@ class MainActivity : AppCompatActivity() {
         // Initialiser l'interface utilisateur ici
         activityMainBinding.rlMainLayout.visibility = View.VISIBLE
         getCurrentLocation()
+
+        val tabLayout = activityMainBinding.tabLayout
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            when (position) {
+                0 -> tab.text = "Humidité"
+                1 -> tab.text = "Pression"
+                2 -> tab.text = "Vitesse du Vent"
+                3 -> tab.text = "Température en Farhenheit"
+                4 -> tab.text = "Soleil"
+                5 -> tab.text = "Prévisions"
+            }
+        }.attach()
+    }
+
+    private fun updateViewPager() {
+        weatherFragmentAdapter = WeatherFragmentAdapter(this)
+        viewPager.adapter = weatherFragmentAdapter
+        viewPager.adapter?.notifyDataSetChanged()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -290,36 +327,33 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLocation() {
 
         if (checkPermissions()) {
-
-            if(isLocationEnabled()) {
-
-                if(ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_FINE_LOCATION)
+            if (isLocationEnabled()) {
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED
-                    &&
-                    ActivityCompat.checkSelfPermission(this,android.Manifest.permission.ACCESS_COARSE_LOCATION )
-                    != PackageManager.PERMISSION_GRANTED) {
-
+                ) {
                     requestPermission()
                     return
                 }
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener(this) {
-                        task -> val location : Location? = task.result
-                    if(location == null) {
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener(this) { task ->
+                    val location: Location? = task.result
+                    if (location == null) {
+                        Toast.makeText(this, "Null received", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val latitude = location.latitude.toString()
+                        val longitude = location.longitude.toString()
 
-                        Toast.makeText(this,"Null received", Toast.LENGTH_SHORT).show()
-                    }else {
-
-                        fetchCurrentLocationWeather(location.latitude.toString(), location.longitude.toString())
+                        fetchCurrentLocationWeather(latitude, longitude)
+                        fetchWeatherForecast(latitude, longitude)
                     }
                 }
-            }else{
-                Toast.makeText(this, "Turn on location",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Turn on location", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
 
-        }else {
-
+        } else {
             requestPermission()
         }
 
@@ -344,6 +378,7 @@ class MainActivity : AppCompatActivity() {
                 if(response.isSuccessful) {
 
                     setDataOnView(response.body(),viewPager.currentItem)
+                    Log.d("API CALL", "Forecast retrieved: $response")
                 }
             }
 
@@ -353,6 +388,36 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun fetchWeatherForecast(latitude: String, longitude: String) {
+        activityMainBinding.pbLoading.visibility = View.VISIBLE
+        ApiUtilities.getApiInterface()?.getWeatherForecast(
+            latitude,
+            longitude,
+            "current,minutely,hourly,alerts",
+            "metric",
+            API_KEY
+        )?.enqueue(object : Callback<ForecastModel> {
+
+            override fun onResponse(call: Call<ForecastModel>, response: Response<ForecastModel>) {
+                if (response.isSuccessful) {
+                    val forecast = response.body()
+                    // Passer les données de prévision au ForecastFragment
+                    val forecastFragment = supportFragmentManager.findFragmentByTag("forecastFragment") as ForecastFragment?
+                    forecastFragment?.updateForecastData(forecast)
+                } else {
+                    Log.e("API CALL", "Failed to retrieve forecast: ${response.code()}")
+                }
+                activityMainBinding.pbLoading.visibility = View.GONE
+            }
+
+            override fun onFailure(call: Call<ForecastModel>, t: Throwable) {
+                Log.e("API CALL", "Error fetching forecast: ${t.message}")
+                activityMainBinding.pbLoading.visibility = View.GONE
+                // Gérez l'échec de l'appel
+            }
+        })
     }
 
 
@@ -376,19 +441,58 @@ class MainActivity : AppCompatActivity() {
         pressureBundle.putInt("pressure", pressure)
         weatherFragmentAdapter.setFragmentData(1, pressureBundle)
 
+        val temperatureBundle = Bundle()
+        temperatureBundle.putInt("tempF", kelvinToCelsius(body?.main?.temp ?: 0.0).times(1.8).plus(32).roundToInt())
+
+        val windBundle = Bundle()
+        windBundle.putDouble("windSpeed", body?.wind?.speed ?: 0.0)
+
+        val sunrise = timeStampToLocalDate(body?.sys?.sunrise?.toLong() ?: 0)
+        val sunset = timeStampToLocalDate(body?.sys?.sunset?.toLong() ?: 0)
+        val sunInfoBundle = Bundle()
+        sunInfoBundle.putString("sunrise", sunrise)
+        sunInfoBundle.putString("sunset", sunset)
+
+        weatherFragmentAdapter.setFragmentData(0, humidityBundle)
+        weatherFragmentAdapter.setFragmentData(1, pressureBundle)
+        weatherFragmentAdapter.setFragmentData(2, windBundle)
+        weatherFragmentAdapter.setFragmentData(3, temperatureBundle)
+        weatherFragmentAdapter.setFragmentData(4, sunInfoBundle) // Utilisez l'index 4 pour le fragment SunInfo
+
+        weatherFragmentAdapter.notifyDataSetChanged()
+
+        // Mettre à jour les données du fragment Humidity
+        val humidityFragment = weatherFragmentAdapter.getFragment(0) as? HumidityFragment
+        humidityFragment?.updateHumidity(humidity)
+
+        // Mettre à jour les données du fragment SunInfo
+        val sunInfoFragment = weatherFragmentAdapter.getFragment(4) as? SunInfoFragment
+        sunInfoFragment?.updateSunInfo(sunrise, sunset)
+
+        // Mettre à jour les données du fragment Pressure
+        val pressureFragment = weatherFragmentAdapter.getFragment(1) as? PressureFragment
+        pressureFragment?.updatePressure(pressure)
+
+        // Mettre à jour les données du fragment Wind
+        val windFragment = weatherFragmentAdapter.getFragment(2) as? WindFragment
+        windFragment?.updateWindSpeed(body?.wind?.speed ?: 0.0)
+
+        // Mettre à jour les données du fragment Temperature
+        val temperatureFragment = weatherFragmentAdapter.getFragment(3) as? TemperatureFragment
+        temperatureFragment?.updateTempF(kelvinToCelsius(body?.main?.temp ?: 0.0).times(1.8).plus(32).roundToInt())
+
         // common data to be displayed in all views/fragments
         activityMainBinding.tvDayMaxTemp.text = "Day :" + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"
         activityMainBinding.tvDayMinTemp.text = "Night :" + kelvinToCelsius(body.main.temp_min).roundToInt() + "°C"
         activityMainBinding.tvFeelsLke.text = "Feels alike :" + kelvinToCelsius(body.main.feels_like).roundToInt() + "°C"
         activityMainBinding.tvWeatherType.text = body.weather[0].main
-        activityMainBinding.tvSunrise.text = timeStampToLocalDate(body.sys.sunrise.toLong())
-        activityMainBinding.tvWindSpeed.text = body.wind.speed.toString() + " m/s"
-        activityMainBinding.tvTempF.text = "" + ((kelvinToCelsius(body.main.temp)).times(1.8).plus(32).roundToInt())
         activityMainBinding.etGetCityName.setText(body.name)
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp).roundToInt() + "°C"
+        activityMainBinding.etGetCityName.setText(body?.name)
+        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
 
         updateUI(body?.weather?.get(0)?.id ?: 0)
-        weatherFragmentAdapter.notifyDataSetChanged()
+
     }
 
 
@@ -407,14 +511,6 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.thunderstorm_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.thunderstorm_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.thunderstorm_bg
-            )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.thunderstorm_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunderstorm)
@@ -426,14 +522,6 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.drizzle))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.drizzle_bg
-            )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.drizzle_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
                 R.drawable.drizzle_bg
             )
@@ -452,14 +540,7 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.rainy_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.rainy_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.rainy_bg
-            )
+
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.rainy_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.rain)
@@ -472,14 +553,6 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.snow))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.snow_bg_img
-            )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.snow_bg_img
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
                 R.drawable.snow_bg_img
             )
@@ -497,14 +570,6 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.mist_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.mist_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.mist_bg
-            )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.mist_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.mist)
@@ -516,14 +581,6 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clear))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.clear_bg
-            )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.clear_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
                 this@MainActivity,
                 R.drawable.clear_bg
             )
@@ -540,14 +597,6 @@ class MainActivity : AppCompatActivity() {
                 this@MainActivity,
                 R.drawable.cloud_bg
             )
-            activityMainBinding.llMainBgBelow.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.cloud_bg
-            )
-            activityMainBinding.llMainBgAbove.background = ContextCompat.getDrawable(
-                this@MainActivity,
-                R.drawable.cloud_bg
-            )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.cloud_bg)
             activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.clouds)
@@ -557,13 +606,14 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.rlMainLayout.visibility = View.VISIBLE
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun timeStampToLocalDate(timeStamp: Long): String {
-
-        val localTime= timeStamp.let {
-            Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toLocalTime()
+        val localDateTime = timeStamp.let {
+            Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toLocalDateTime()
         }
 
-        return localTime.toString()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        return localDateTime.format(formatter)
     }
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
