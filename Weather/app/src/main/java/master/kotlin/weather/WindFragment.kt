@@ -32,8 +32,15 @@ class WindFragment : Fragment() {
         _binding = null
     }
 
-    fun updateWindSpeed(windSpeed: Double) {
-        binding.tvWindSpeedValue.text = "$windSpeed m/s"
+    fun isViewAvailable(): Boolean {
+        return _binding != null
     }
+
+    fun updateWindSpeed(windSpeed: Double) {
+        if (isViewAvailable()) {
+            binding.tvWindSpeedValue.text = "$windSpeed m/s"
+        }
+    }
+
 
 }

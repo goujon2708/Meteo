@@ -463,23 +463,41 @@ class MainActivity : AppCompatActivity() {
 
         // Mettre à jour les données du fragment Humidity
         val humidityFragment = weatherFragmentAdapter.getFragment(0) as? HumidityFragment
-        humidityFragment?.updateHumidity(humidity)
+        humidityFragment?.let {
+            if (it.isViewAvailable()) {
+                it.updateHumidity(humidity)
+            }
+        }
 
-        // Mettre à jour les données du fragment SunInfo
         val sunInfoFragment = weatherFragmentAdapter.getFragment(4) as? SunInfoFragment
-        sunInfoFragment?.updateSunInfo(sunrise, sunset)
+        sunInfoFragment?.let {
+            if (it.isViewAvailable()) {
+                it.updateSunInfo(sunrise, sunset)
+            }
+        }
 
         // Mettre à jour les données du fragment Pressure
         val pressureFragment = weatherFragmentAdapter.getFragment(1) as? PressureFragment
-        pressureFragment?.updatePressure(pressure)
-
-        // Mettre à jour les données du fragment Wind
+        pressureFragment?.let {
+            if (it.isViewAvailable()) {
+                it.updatePressure(pressure)
+            }
+        }
+        
         val windFragment = weatherFragmentAdapter.getFragment(2) as? WindFragment
-        windFragment?.updateWindSpeed(body?.wind?.speed ?: 0.0)
+        windFragment?.let {
+            if (it.isViewAvailable()) {
+                it.updateWindSpeed(body?.wind?.speed ?: 0.0)
+            }
+        }
 
-        // Mettre à jour les données du fragment Temperature
         val temperatureFragment = weatherFragmentAdapter.getFragment(3) as? TemperatureFragment
-        temperatureFragment?.updateTempF(kelvinToCelsius(body?.main?.temp ?: 0.0).times(1.8).plus(32).roundToInt())
+        temperatureFragment?.let {
+            if (it.isViewAvailable()) {
+                it.updateTempF(kelvinToCelsius(body?.main?.temp ?: 0.0).times(1.8).plus(32).roundToInt())
+            }
+        }
+
 
         // common data to be displayed in all views/fragments
         activityMainBinding.tvDayMaxTemp.text = "Day :" + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"

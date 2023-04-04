@@ -36,4 +36,8 @@ class PressureFragment : Fragment() {
     fun updatePressure(pressure: Int) {
         binding.tvPressureValue?.text = pressure.toString()
     }
+
+    fun isViewAvailable(): Boolean {
+        return _binding != null
+    }
 }

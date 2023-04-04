@@ -36,4 +36,8 @@ class HumidityFragment : Fragment() {
     fun updateHumidity(humidity: String) {
         binding.tvHumidityValue?.text = humidity
     }
+
+    fun isViewAvailable(): Boolean {
+        return _binding != null
+    }
 }

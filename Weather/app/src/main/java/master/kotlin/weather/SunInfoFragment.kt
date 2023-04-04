@@ -37,4 +37,9 @@ class SunInfoFragment : Fragment() {
         binding.tvSunriseValue.text = sunrise
         binding.tvSunsetValue.text = sunset
     }
+
+    fun isViewAvailable(): Boolean {
+        return _binding != null
+    }
+
 }

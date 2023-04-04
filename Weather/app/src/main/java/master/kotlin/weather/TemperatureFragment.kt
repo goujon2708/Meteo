@@ -35,4 +35,8 @@ class TemperatureFragment : Fragment() {
         binding.tvTempFValue.text = "$tempF°F"
     }
 
+    fun isViewAvailable(): Boolean {
+        return _binding != null
+    }
+
 }
