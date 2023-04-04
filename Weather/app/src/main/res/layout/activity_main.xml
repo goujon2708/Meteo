@@ -113,9 +113,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginLeft="55dp"
-                android:layout_marginRight="55dp"
-                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="75dp"
                 android:background="@drawable/bg_spinner">
 
             </Spinner>
@@ -131,7 +130,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_date_and_time"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:text="@string/demo_date">
 
                 </TextView>
@@ -256,22 +255,34 @@
                     android:layout_marginTop="300dp"
                     android:orientation="vertical">
 
-                    <!-- ViewPager2 en haut -->
-                    <androidx.viewpager2.widget.ViewPager2
-                        android:id="@+id/viewPager"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
+                        <!-- ViewPager2 en haut -->
+                        <androidx.viewpager2.widget.ViewPager2
+                            android:id="@+id/viewPager"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="20dp"
+                            android:layout_weight="1"/>
 
-                    <!-- TabLayout en bas -->
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/tabLayout"
-                        android:layout_width="wrap_content"
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/black"
-                        app:tabGravity="fill"
-                        app:tabMode="fixed"
-                        app:tabIndicatorHeight="3dp"/>
+                        android:layout_margin="20dp"
+                        app:cardCornerRadius="4dp">
+
+                        <!-- TabLayout en bas -->
+                        <com.google.android.material.tabs.TabLayout
+                            android:id="@+id/tabLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            app:tabGravity="center"
+                            app:tabMode="fixed"
+                            app:tabIndicatorHeight="3dp"
+                            app:tabTextColor="@color/white"
+                            app:tabTextAppearance="@style/tabLayoutStyyle"/>
+
+                    </com.google.android.material.card.MaterialCardView>
+
 
                 </LinearLayout>
 

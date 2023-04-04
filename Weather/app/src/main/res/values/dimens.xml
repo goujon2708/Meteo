@@ -9,5 +9,6 @@
     <dimen name="text_large">18sp</dimen>
     <dimen name="text_x_large">23sp</dimen>
     <dimen name="text_super_large">70sp</dimen>
+    <dimen name="tabLayoutSize">9dp</dimen>
 
 </resources>

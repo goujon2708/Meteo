@@ -20,4 +20,10 @@
         <item name="android:gravity">end</item>
     </style>
 
+    <style name="tabLayoutStyyle" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">10dp</item>
+    </style>
+
+
+
 </resources>

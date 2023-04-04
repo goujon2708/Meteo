@@ -260,12 +260,12 @@ class MainActivity : AppCompatActivity() {
         val tabLayout = activityMainBinding.tabLayout
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = "Humidité"
-                1 -> tab.text = "Pression"
-                2 -> tab.text = "Vitesse du Vent"
-                3 -> tab.text = "Température en Farhenheit"
-                4 -> tab.text = "Soleil"
-                5 -> tab.text = "Prévisions"
+                0 -> tab.text = "Hum"
+                1 -> tab.text = "Press"
+                2 -> tab.text = "Wind"
+                3 -> tab.text = "Farh"
+                4 -> tab.text = "Sun"
+                5 -> tab.text = "Prev"
             }
         }.attach()
     }
@@ -510,9 +510,9 @@ class MainActivity : AppCompatActivity() {
 
 
         // common data to be displayed in all views/fragments
-        activityMainBinding.tvDayMaxTemp.text = "Day :" + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"
-        activityMainBinding.tvDayMinTemp.text = "Night :" + kelvinToCelsius(body.main.temp_min).roundToInt() + "°C"
-        activityMainBinding.tvFeelsLke.text = "Feels alike :" + kelvinToCelsius(body.main.feels_like).roundToInt() + "°C"
+        activityMainBinding.tvDayMaxTemp.text = "Day : " + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"
+        activityMainBinding.tvDayMinTemp.text = "Night : " + kelvinToCelsius(body.main.temp_min).roundToInt() + "°C"
+        activityMainBinding.tvFeelsLke.text = "Feels alike : " + kelvinToCelsius(body.main.feels_like).roundToInt() + "°C"
         activityMainBinding.tvWeatherType.text = body.weather[0].main
         activityMainBinding.etGetCityName.setText(body.name)
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp).roundToInt() + "°C"
@@ -534,6 +534,8 @@ class MainActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.thunderstorm)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.thunderstorm))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.thunderstorm))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -548,6 +550,8 @@ class MainActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.drizzle)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.drizzle))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.drizzle))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -563,6 +567,8 @@ class MainActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.rain)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.rain))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.rain))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -579,6 +585,8 @@ class MainActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.snow)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.snow))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.snow))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -593,6 +601,8 @@ class MainActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.atmosphere)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.atmosphere))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.atmosphere))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -607,6 +617,8 @@ class MainActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.clear)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clear))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.clear))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
@@ -614,12 +626,14 @@ class MainActivity : AppCompatActivity() {
             )
 
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.clear_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.clear)
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.sun)
         } else {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = resources.getColor(R.color.clouds)
             activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clouds))
+            activityMainBinding.tabLayout.setBackgroundColor(resources.getColor(R.color.clouds))
+            activityMainBinding.tabLayout.setSelectedTabIndicatorColor(resources.getColor(R.color.white))
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
