@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+
         // Gestion de la maj du menu favoris
         this.notFavorisIV.setOnClickListener {
 
@@ -298,24 +299,35 @@ class MainActivity : AppCompatActivity() {
     /**
      * Appel de l'API pour récupérer les données en fonction de la ville
      */
-    private fun getCityWeather(cityName : String) {
+    private fun getCityWeather(cityName: String) {
+        activityMainBinding.pbLoading.visibility = View.VISIBLE
 
-        activityMainBinding.pbLoading.visibility=View.VISIBLE
-
-        // appel API
+        // Appel API pour les données météorologiques actuelles
         ApiUtilities.getApiInterface()?.getCityWeatherData(cityName, API_KEY)?.enqueue(object : Callback<ModelClass> {
 
-            override fun onResponse(call:Call<ModelClass>, response: Response<ModelClass>) {
+            override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                val body = response.body()
+                if (body == null) {
+                    Toast.makeText(applicationContext, "Not a valid city name", Toast.LENGTH_SHORT).show()
+                    activityMainBinding.pbLoading.visibility = View.GONE
+                    return
+                }
+                val latitude = body.lat?.toString() ?: "0.0"
+                val longitude = body.lon?.toString() ?: "0.0"
 
-                setDataOnView(response.body(), viewPager.currentItem)
+                fetchWeatherForecast(latitude, longitude)
+                setDataOnView(body, viewPager.currentItem)
             }
 
-            override fun onFailure(call:Call<ModelClass>,t : Throwable) {
 
+            override fun onFailure(call: Call<ModelClass>, t: Throwable) {
                 Toast.makeText(applicationContext, "Not a Valid city Name", Toast.LENGTH_SHORT).show()
             }
         })
     }
+
+
+
 
     companion object{
         private const val PERMISSION_REQUEST_ACCESS_LOCATION=100
@@ -337,17 +349,22 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
                 fusedLocationProviderClient.lastLocation.addOnCompleteListener(this) { task ->
-                    val location: Location? = task.result
-                    if (location == null) {
-                        Toast.makeText(this, "Null received", Toast.LENGTH_SHORT).show()
-                    } else {
-                        val latitude = location.latitude.toString()
-                        val longitude = location.longitude.toString()
+                    if (task.isSuccessful) {
+                        val location: Location? = task.result
+                        if (location != null) {
+                            val latitude = location.latitude.toString()
+                            val longitude = location.longitude.toString()
 
-                        fetchCurrentLocationWeather(latitude, longitude)
-                        fetchWeatherForecast(latitude, longitude)
+                            fetchCurrentLocationWeather(latitude, longitude)
+                            fetchWeatherForecast(latitude, longitude)
+                        } else {
+                            Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this, "Error getting location", Toast.LENGTH_SHORT).show()
                     }
                 }
+
             } else {
                 Toast.makeText(this, "Turn on location", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -380,6 +397,7 @@ class MainActivity : AppCompatActivity() {
 
                     setDataOnView(response.body(),viewPager.currentItem)
                     Log.d("API CALL", "Forecast retrieved: $response")
+                    fetchWeatherForecast(latitude, longitude)
                 }
             }
 
@@ -409,18 +427,24 @@ class MainActivity : AppCompatActivity() {
                     val jsonForecast = gson.toJson(forecast)
                     Log.d("API CALL", "Forecast retrieved: $jsonForecast")
 
-                    // Passer les données de prévision au ForecastFragment
-                    val forecastData = Bundle().apply {
-                        putParcelable("forecast", forecast)
+                    if (forecast != null) {
+                        val forecastData = Bundle().apply {
+                            putParcelable("forecast", forecast)
+                        }
+                        val adapter = viewPager.adapter as WeatherFragmentAdapter
+                        adapter.setFragmentData(5, forecastData)
+                        val forecastFragment = adapter.getFragment(5) as? ForecastFragment
+                        forecastFragment?.let {
+                            if (it.isViewAvailable()) {
+                                it.updateForecastData(forecast)
+                            }
+                        }
                     }
-                    val adapter = viewPager.adapter as WeatherFragmentAdapter
-                    adapter.setFragmentData(5, forecastData) // 5 étant l'index de ForecastFragment dans l'adaptateur
                 } else {
                     Log.e("API CALL", "Failed to retrieve forecast: ${response.code()}")
                 }
                 activityMainBinding.pbLoading.visibility = View.GONE
             }
-
 
             override fun onFailure(call: Call<ForecastModel>, t: Throwable) {
                 Log.e("API CALL", "Error fetching forecast: ${t.message}")
@@ -510,12 +534,13 @@ class MainActivity : AppCompatActivity() {
 
 
         // common data to be displayed in all views/fragments
-        activityMainBinding.tvDayMaxTemp.text = "Day : " + kelvinToCelsius(body!!.main.temp_max).roundToInt() + "°C"
-        activityMainBinding.tvDayMinTemp.text = "Night : " + kelvinToCelsius(body.main.temp_min).roundToInt() + "°C"
-        activityMainBinding.tvFeelsLke.text = "Feels alike : " + kelvinToCelsius(body.main.feels_like).roundToInt() + "°C"
-        activityMainBinding.tvWeatherType.text = body.weather[0].main
-        activityMainBinding.etGetCityName.setText(body.name)
-        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp).roundToInt() + "°C"
+        activityMainBinding.tvDayMaxTemp.text = "Day : " + kelvinToCelsius(body?.main?.temp_max ?: 0.0).roundToInt() + "°C"
+        activityMainBinding.tvDayMinTemp.text = "Night : " + kelvinToCelsius(body?.main?.temp_min ?: 0.0).roundToInt() + "°C"
+        activityMainBinding.tvFeelsLke.text = "Feels alike : " + kelvinToCelsius(body?.main?.feels_like ?: 0.0).roundToInt() + "°C"
+        activityMainBinding.tvWeatherType.text = body?.weather?.get(0)?.main ?: "N/A"
+        activityMainBinding.etGetCityName.setText(body?.name)
+        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
+
         activityMainBinding.etGetCityName.setText(body?.name)
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
 
