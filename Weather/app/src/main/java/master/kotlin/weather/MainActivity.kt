@@ -527,7 +527,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.etGetCityName.setText(body.name)
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp).roundToInt() + "°C"
         activityMainBinding.etGetCityName.setText(body.name)
-        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp ?: 0.0) + "°C"
+        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp ?: 0.0).roundToInt() + "°C"
 
         updateUI(body.weather?.get(0)?.id ?: 0)
 
