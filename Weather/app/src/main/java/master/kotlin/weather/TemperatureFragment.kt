@@ -1,5 +1,6 @@
 package master.kotlin.weather
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -31,8 +32,9 @@ class TemperatureFragment : Fragment() {
         _binding = null
     }
 
+    @SuppressLint("SetTextI18n")
     fun updateTempF(tempF: Int) {
-        binding.tvTempFValue.text = "$tempF°F"
+        binding.tvTempFValue.text = "$tempF °F"
     }
 
     fun isViewAvailable(): Boolean {

@@ -10,7 +10,7 @@ import master.kotlin.weather.databinding.FragmentForecastBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import com.bumptech.glide.Glide
-
+import master.kotlin.weather.R
 
 
 class ForecastFragment : Fragment() {

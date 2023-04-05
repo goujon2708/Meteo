@@ -1,5 +1,6 @@
 package master.kotlin.weather
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ class WindFragment : Fragment() {
     private var _binding: FragmentWindBinding? = null
     private val binding get() = _binding!!
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -22,7 +24,7 @@ class WindFragment : Fragment() {
 
         val windSpeed = arguments?.getDouble("windSpeed")
 
-        binding.tvWindSpeedValue.text = "$windSpeed hPa"
+        binding.tvWindSpeedValue.text = "$windSpeed m/s"
 
         return view
     }

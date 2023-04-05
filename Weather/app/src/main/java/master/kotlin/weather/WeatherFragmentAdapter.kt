@@ -10,8 +10,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class WeatherFragmentAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
 
-    val fragments: MutableMap<Int, Fragment> = HashMap()
-    val fragmentDataList = mutableListOf<Bundle>()
+    private val fragments: MutableMap<Int, Fragment> = HashMap()
+    private val fragmentDataList = mutableListOf<Bundle>()
 
     override fun getItemCount(): Int {
         return 6
