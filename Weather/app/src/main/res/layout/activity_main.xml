@@ -70,27 +70,24 @@
             android:id="@+id/rl_sub_layout"
             android:layout_below="@+id/cv_toolbar">
 
-            <!-- <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"> -->
 
             <ImageView
                 android:id="@+id/iv_notFavoris"
                 android:layout_width="35dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="350dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="25dp"
                 android:layout_marginTop="23dp"
                 android:foregroundGravity="center"
                 android:translationZ="2dp"
-                app:srcCompat="@drawable/favorite" />
+                app:srcCompat="@drawable/favorite"/>
 
             <ImageView
                 android:id="@+id/iv_favoris"
                 android:layout_width="35dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="350dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="25dp"
                 android:layout_marginTop="23dp"
                 android:foregroundGravity="center"
                 android:translationZ="2dp"
@@ -98,6 +95,7 @@
                 android:visibility="gone">
 
             </ImageView>
+
 
             <ImageView
                 android:layout_width="match_parent"
@@ -241,12 +239,10 @@
             <!--</FrameLayout> -->
 
             <RelativeLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentBottom="true"
+                android:layout_marginBottom="0dp"
                 tools:context=".MainActivity">
 
                 <LinearLayout
@@ -255,13 +251,13 @@
                     android:layout_marginTop="300dp"
                     android:orientation="vertical">
 
-                        <!-- ViewPager2 en haut -->
-                        <androidx.viewpager2.widget.ViewPager2
-                            android:id="@+id/viewPager"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_margin="20dp"
-                            android:layout_weight="1"/>
+                    <!-- ViewPager2 en haut -->
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/viewPager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="20dp"
+                        android:layout_weight="1" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
@@ -276,10 +272,10 @@
                             android:layout_height="wrap_content"
                             android:background="@color/white"
                             app:tabGravity="center"
-                            app:tabMode="fixed"
                             app:tabIndicatorHeight="3dp"
-                            app:tabTextColor="@color/white"
-                            app:tabTextAppearance="@style/tabLayoutStyyle"/>
+                            app:tabMode="fixed"
+                            app:tabTextAppearance="@style/tabLayoutStyyle"
+                            app:tabTextColor="@color/white" />
 
                     </com.google.android.material.card.MaterialCardView>
 
