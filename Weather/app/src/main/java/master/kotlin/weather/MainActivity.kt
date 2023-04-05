@@ -213,7 +213,6 @@ class MainActivity : AppCompatActivity() {
                     imm.hideSoftInputFromWindow(view.windowToken, 0)
                     activityMainBinding.etGetCityName.clearFocus()
                 }
-                fetchWeatherForecast()
                 updateViewPager()
                 true
             } else false
