@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.rlMainLayout.visibility = View.GONE
 
         // Initialisation de la liste
-        this.villesFavorites = arrayListOf("Favoris", "Dubai", "Paris", "Madrid")
+        this.villesFavorites = arrayListOf("Favoris", "Dubai", "Paris", "Madrid", "Moscow", "Fairbanks", "Cadillac")
 
         // Récupération du spinner
         this.spinner = findViewById(R.id.sp_favoris)
@@ -537,6 +537,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Mise à jour de l'interface utilisateur
      */
+    @SuppressLint("ResourceAsColor")
     private fun updateUI(id : Int) {
 
         if(id in 200..232 ) {
@@ -602,11 +603,11 @@ class MainActivity : AppCompatActivity() {
 
             activityMainBinding.rlSubLayout.background = ContextCompat.getDrawable(
                 this@MainActivity,
-                R.drawable.snow_bg_img
+                R.drawable.cloud_bg
             )
 
-            activityMainBinding.ivWeatherBg.setImageResource(R.drawable.snow_bg_img)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.snow)
+            activityMainBinding.ivWeatherBg.setImageResource(R.drawable.cloud_bg)
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.snowflake)
         } else if(id in 701..781) {
 
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
