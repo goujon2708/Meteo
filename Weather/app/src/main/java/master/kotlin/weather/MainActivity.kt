@@ -369,6 +369,10 @@ class MainActivity : AppCompatActivity() {
             PERMISSION_REQUEST_ACCESS_LOCATION)
     }
 
+
+    /**
+     * Récupération des données météo en fonction de la localisation exacte de l'utilisateur
+     */
     private fun fetchCurrentLocationWeather(latitude : String, longitude: String) {
 
         activityMainBinding.pbLoading.visibility=View.VISIBLE
@@ -392,6 +396,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Récupération de la prédiction de la météo sur plusieurs jours
+     */
     private fun fetchWeatherForecast(latitude: String, longitude: String) {
         activityMainBinding.pbLoading.visibility = View.VISIBLE
         ApiUtilities.getApiInterface()?.getWeatherForecast(
@@ -431,6 +438,9 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Mise à jour des données sur l'IHM
+     */
     @SuppressLint("SetTextI18n")
     private fun setDataOnView(body: ModelClass?, position: Int) {
         val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm")
@@ -516,15 +526,17 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.tvWeatherType.text = body.weather[0].main
         activityMainBinding.etGetCityName.setText(body.name)
         activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp).roundToInt() + "°C"
-        activityMainBinding.etGetCityName.setText(body?.name)
-        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body?.main?.temp ?: 0.0) + "°C"
+        activityMainBinding.etGetCityName.setText(body.name)
+        activityMainBinding.tvTemp.text = "" + kelvinToCelsius(body.main.temp ?: 0.0) + "°C"
 
-        updateUI(body?.weather?.get(0)?.id ?: 0)
+        updateUI(body.weather?.get(0)?.id ?: 0)
 
     }
 
 
-
+    /**
+     * Mise à jour de l'interface utilisateur
+     */
     private fun updateUI(id : Int) {
 
         if(id in 200..232 ) {
@@ -648,15 +660,21 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.rlMainLayout.visibility = View.VISIBLE
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
+    /**
+     * Méthode de conversion
+     */
     private fun timeStampToLocalDate(timeStamp: Long): String {
         val localDateTime = timeStamp.let {
             Instant.ofEpochSecond(it).atZone(ZoneId.systemDefault()).toLocalDateTime()
         }
 
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
         return localDateTime.format(formatter)
     }
+
+
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -664,6 +682,9 @@ class MainActivity : AppCompatActivity() {
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
+    /**
+     * Méthode qui renvoie vrai si l'utilisateur accepte de partager sa localisation
+     */
     private fun checkPermissions(): Boolean {
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
@@ -676,6 +697,10 @@ class MainActivity : AppCompatActivity() {
         }
         return false
     }
+
+    /**
+     * Méthode de conversion
+     */
     private fun kelvinToCelsius(temp:Double): Double {
 
         var intTemp = temp
